@@ -351,11 +351,13 @@ if __name__ == "__main__":
         default="merge",
     )
     args = parser.parse_args()
-    model_path = "/data2/tzw/models/baichuan2/baichuan2-7b-base_vllm"
+    model_path = "/home/tzw/models/baichuan2/baichuan2-7b-base_vllm"
     lora_merge_model_path = "/data2/tzw/adapters/baichuan2/2023-11-06-14-25_model"
     lora_merge_model_path = "/data2/tzw/adapters/baichuan2/2023-11-07-10-20_model"
-    lora_parent = "/data2/tzw/adapters/baichuan2/2023-11-06-14-25"
-    lora_parent = "/data2/tzw/adapters/baichuan2/2023-11-07-10-20"
+    lora_parent = "/data2/tzw/adapters/baichuan2/2023-11-11-19-24"
+    lora_parent = (
+        "/home/tzw/models/adapters/baichuan2/baichuan2-7b-base/2023-11-12-14-40"
+    )
     lora_model_path = f"{lora_parent}/adapter_model.bin"
     lora_config_path = f"{lora_parent}/adapter_config.json"
     inference_task_name = "generate"
@@ -366,40 +368,25 @@ if __name__ == "__main__":
         / ".."
         / "prompts/generate/v1/inference_config.json"
     )
-    inference_config = "/home/tzw/projects/live_commentary_ai/prompts/generate/v1/inference_config.json"
+    inference_config = (
+        "/home/tzw/dev/sft_hub/sfthub/classification/inference_config.json"
+    )
     if args.test_type == "merge":
-        baichun_llm = create_vllm(model_path=lora_merge_model_path)
+        baichun_llm = create_vllm(model_path=lora_merge_model_path, gpu_memory_need=16)
     else:
-        baichun_llm = create_vllm(model_path=model_path)
+        baichun_llm = create_vllm(model_path=model_path, gpu_memory_need=16)
     import time
 
     begin = time.time()
-    input = """\n<s>
-你作为一个电商的专家，结合商品信息，关于文案是否有问题，请首先做幻觉分析，然后从2个答案里选择一个
-1. 幻觉文案，文案虚构了一些事实,和一些不可推理出来的事实。
-2. 正常文案，文案反应了商品信息，是一个正常的电商文案。
-商品信息: >>>
 
-商品标题: Skechers圆领连衣裙 
-卖点: 
-1、圆领设计简洁大方 
-2、以舒适为核心 
-3、甄选优质面料 
-4、柔中带着弹性舒展自如 
-
-
-<<<
-文案:推出全新Skechers圆领连衣裙，时尚女性必备单品！优雅圆领设计，简约大气。选用优质面料，柔软舒适，贴合身体曲线。
-
-请一步一步思考，幻觉分析是:</s>"""
-    input = """A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.
-Human: 文本：你想像自己的小花园
+    input = """文本：你想像自己的小花园
 是这个香味的
 那如果说你不喜欢有香味的话
 你可以通过它这个
 白色的是无香的
 没有味道，请对其描述的产品进行输出，无产品或者无法判断的时候分别输出这两个标签，产品的一二级标签使用“-”进行连接
-Assistant:"""
+"""
+    input = f"<reserved_106>{input}<reserved_107>"
     if args.test_type == "merge":
         response = baichun_llm.reason(
             input,
