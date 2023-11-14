@@ -2,7 +2,7 @@ from vllm import LLM, SamplingParams
 
 # export CUDA_VISIBLE_DEVICES=1,2 && python app.py
 if __name__ == "__main__":
-    model_name = "/home/tzw/models/baichuan2/baichuan2_13b"
+    model_name = "/home/tzw/models/baichuan2/baichuan2_13b_vllm/"
     llm = LLM(model=model_name, trust_remote_code=True, tensor_parallel_size=2)
     query = "中国的首都是"
     input_pattern = "{}"
