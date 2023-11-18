@@ -12,6 +12,8 @@ import sys
 # from llmserver.config import Config
 import traceback
 from llmserver.log import config_log
+from llmserver.config import ServerConfig
+from llmserver.impl.vllm_batch_server import VllmBatchServer
 from vllm import LLM, SamplingParams
 from fastapi import FastAPI
 from typing import List
@@ -39,14 +41,14 @@ sampling_params = SamplingParams(temperature=0.1, top_p=0.95, max_tokens=256)
 class RequestMsg(BaseModel):
     requestID: str = "no request id"
     prompt_str_list: List[str] = ["美国的首都是？", "中国的人口有多少？"]
-    inference_config_path: Path = Path("/tmp/tzw.txt")
-    inference_task_name: str = "generate"
+    inference_task_type: str = "generate"
     stop_list = ([],)
-    lora_name = (None,)
+    # lora_name = (None,)
 
 
 @app.post("/text_generation")
 def batch_echo(request_msg: RequestMsg):
+    vllm_batch_server = VllmBatchServer.instance
     response = EasyDict()
     whole_begin = time.time()
     results = []
@@ -77,7 +79,7 @@ if __name__ == "__main__":
         "-c",
         "--config",
         help="config: config file ",
-        default="config.yml",
+        default="server_13b_origin.yml",
     )
     parser.add_argument(
         "-g",
@@ -90,15 +92,15 @@ if __name__ == "__main__":
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
     )
     # init config
-    # config_file = root_dir / "etc" / args.env / args.config
-    # if not config_file.is_file():
-    #     sys.stderr.write(f"{config_file} does not exist")
-    #     sys.exit(2)
-    # with open(config_file, "r") as file:
-    #     config = Config.load(config_file)
-    # cuda_index = args.gpu_index
-    # if cuda_index is not None:
-    #     cuda_index = int(cuda_index)
-    # init service
-    # SimpleGenerateEngine.instance().build(config, cuda_device=cuda_index)
-    uvicorn.run(app, host="0.0.0.0", port=8172)
+    config_file = root_dir / "etc" / args.env / args.config
+    if not config_file.is_file():
+        sys.stderr.write(f"{config_file} does not exist")
+        sys.exit(2)
+    # init server
+    config = ServerConfig.load(file_path=config_file)
+    print(config.base_model_name_or_path)
+    print(config.lora_list)
+    vllm_batch_server = VllmBatchServer()
+    vllm_batch_server.build(server_config=config)
+
+    uvicorn.run(app, host="0.0.0.0", port=config.server_port)

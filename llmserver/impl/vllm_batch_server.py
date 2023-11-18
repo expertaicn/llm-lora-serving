@@ -16,7 +16,7 @@ from llmserver.config import LoraInfo
 
 ##############################################################
 #
-# LORA Adapter
+# LORA Adapter TODO 分布式环境的lora合并存在问题，主要的原因是不太理解ray的原理
 #
 ##############################################################
 
@@ -92,8 +92,33 @@ def switch_lora(
 
 def adapt_lora(llm, lora_weights, lora_config, merge=True):
     for worker in llm.llm_engine.workers:
+        try:
+            model = worker.model
+        except:
+            return
+            # print(dir(worker), type(worker))
+            # try:
+            #     tmp = worker.execute_method.remote
+            #     print(type(tmp))
+            #     tmp = worker.__getattr__.remote
+
+            #     print(type(tmp))
+            #     model = tmp("model")
+            #     print(type(model))
+            #     import ray
+
+            #     model = ray.get(model)
+            #     print(type(model))
+            #     # tmp = worker.getattr("model")
+            #     # print(type(tmp))
+            # except:
+            #     import traceback
+
+            #     print(traceback.format_exc())
+            #     print("worker has no member worker")
+
         switch_lora(
-            worker.model,
+            model,
             lora_weights,
             r=lora_config.r,
             lora_alpha=lora_config.lora_alpha,
@@ -115,6 +140,7 @@ def lora_decorator(func):
         with self.lock:
             # 提取 merge 和 name 参数
             lora_name = kwargs.get("lora_name", None)
+            lora_name = None  # IMPROVE ME
             if lora_name is None or lora_name == "":
                 logging.info("using original model .....")
                 result = func(self, *args, **kwargs)
@@ -167,7 +193,7 @@ class VllmBatchServer(BaseLLMServer, metaclass=VLLMMetaClass):
         self.model = LLM(
             model=server_config.base_model_name_or_path,
             trust_remote_code=True,
-            # tensor_parallel_size=server_config.tensor_parallelism_size,
+            tensor_parallel_size=server_config.tensor_parallelism_size,
             dtype="float16",  # TODO when use lora, should uncomment this line
         )
 
@@ -258,7 +284,9 @@ class VllmBatchServer(BaseLLMServer, metaclass=VLLMMetaClass):
 
 if __name__ == "__main__":
     pass
-    file_path = Path(__file__).parent / ".." / ".." / "etc" / "dev" / "server_7b.yml"
+    file_path = (
+        Path(__file__).parent / ".." / ".." / "etc" / "dev" / "server_13b_sft.yml"
+    )
     config = ServerConfig.load(file_path=file_path)
     print(config.base_model_name_or_path)
     print(config.lora_list)
@@ -277,6 +305,5 @@ if __name__ == "__main__":
     result = vllm_batch_server.batch_reason(
         prompt_str_list=input_list,
         inference_type_name="baichuan2_strong_certainty",
-        lora_name="tagger",
     )
     print(result)
