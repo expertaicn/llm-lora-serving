@@ -5,7 +5,7 @@ import json
 import logging
 from typing import Optional, List
 from llmserver.custom_types import SingletonType
-from llmserver.base_llm import BaseLLM, GPUMemmoryInfo, timing_decorator
+from llmserver.base_llm_server import BaseLLM, GPUMemmoryInfo, timing_decorator
 import threading
 import copy
 import torch

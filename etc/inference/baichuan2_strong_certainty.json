@@ -1,0 +1,15 @@
+{
+    "pad_token_id": 0,
+    "bos_token_id": 1,
+    "eos_token_id": 2,
+    "user_token_id": 195,
+    "assistant_token_id": 196,
+    "max_new_tokens": 150,
+    "temperature": 0.01,
+    "top_k": 3,
+    "top_p": 0.8,
+    "repetition_penalty": 1.1,
+    "do_sample": true,
+    "transformers_version": "4.29.2",
+    "stop_list":["语音转写的文案", "语音", "产品", "产品名称", "产品", "产品名称："]
+}

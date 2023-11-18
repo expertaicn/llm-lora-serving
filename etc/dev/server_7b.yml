@@ -1,0 +1,8 @@
+base_model_name_or_path: /home/tzw/models/baichuan2/baichuan2-7b-base_vllm
+lora_list:
+- lora_config_path: adapter_config.json
+  lora_model_path: adapter_model.bin
+  lora_name: tagger
+  lora_parent: /home/tzw/models/adapters/baichuan2/baichuan2-7b-base/2023-11-12-14-40
+server_port: 8711
+tensor_parallelism_size: 2
