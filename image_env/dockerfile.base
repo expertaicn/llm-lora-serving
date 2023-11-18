@@ -1,0 +1,66 @@
+#############################################################
+####### DATE: 2023年 08月 21日 星期一 09:22:24 CST            #
+####### PyTorch Build: 2.01                                 #
+#############################################################
+
+# 使用 NVIDIA CUDA 基础镜像作为基础
+FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+RUN apt-get update 
+ENV DEBIAN_FRONTEND=noninteractive
+
+
+# 基础软件和配置
+RUN apt-get update && apt-get install -y vim
+RUN apt-get update && apt-get install -y git
+RUN ln -s /usr/local/cuda-11.7 /usr/local/cuda
+
+
+# 设置时区为上海时区
+RUN apt-get install -y tzdata
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 设置环境变量，以便使用 Miniconda3
+ENV PATH="/opt/miniconda3/bin:$PATH"
+
+# 安装 Miniconda3
+RUN apt-get install -y wget
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+RUN chmod +x miniconda.sh \
+    && ./miniconda.sh -b -p /opt/miniconda3 \
+    && rm miniconda.sh
+
+# 设置系统范围的 Conda 访问
+RUN echo ". /opt/miniconda3/etc/profile.d/conda.sh" >> /etc/profile \
+    && echo "conda activate base" >> /etc/profile
+
+# 设置系统使用 Miniconda3 中的 Python 和 pip
+RUN update-alternatives --install /usr/bin/python python /opt/miniconda3/bin/python 1 \
+    && update-alternatives --install /usr/bin/pip pip /opt/miniconda3/bin/pip 1 \
+    && update-alternatives --install /usr/bin/pip3 pip3 /opt/miniconda3/bin/pip 1
+
+
+# 创建并设置工作目录
+WORKDIR /app
+
+# 安装 PyTorch
+# 2.0.1
+RUN pip3 install -i  https://mirrors.aliyun.com/pypi/simple/ torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
+
+COPY vllm-0.2.1.post1 /app/vllm
+RUN pip install -i https://mirrors.aliyun.com/pypi/simple/   -e /app/vllm
+RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  xformers==0.0.20
+RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  redis
+RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  celery
+RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  mutagen
+RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  Levenshtein
+RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  mysql-connector-python
+RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  kombu
+RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  pypinyin
+
+#RUN git clone https://github.com/vllm-project/vllm.git \
+#    && cd vllm \
+#    && pip install -e .
+
+# 指定默认启动命令或脚本
+CMD ["/bin/bash"]

@@ -1,0 +1,8 @@
+uvicorn
+fastapi
+pathlib
+pydantic
+jinja2
+easydict
+gputil
+transformers-stream-generator==0.0.4
