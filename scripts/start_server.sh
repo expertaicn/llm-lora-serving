@@ -15,6 +15,3 @@ source select_gpu_script.sh
 selected_gpu_index=$(select_gpu)
 echo "PYTHONPATH=${basepath}/../  &&  export CUDA_VISIBLE_DEVICES=${selected_gpu_index} &&  nohup ${bin}  ${py_file} -e $env_type > log_https 2>&1 &"
 export PYTHONPATH=${basepath}/../  &&   export CUDA_VISIBLE_DEVICES=${selected_gpu_index} && ${bin}  ${py_file} -e $env_type > log_https 2>&1
-~
-~
-~
