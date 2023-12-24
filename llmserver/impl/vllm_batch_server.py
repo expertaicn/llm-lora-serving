@@ -194,7 +194,8 @@ class VllmBatchServer(BaseLLMServer, metaclass=VLLMMetaClass):
             model=server_config.base_model_name_or_path,
             trust_remote_code=True,
             tensor_parallel_size=server_config.tensor_parallelism_size,
-            dtype="float16",  # TODO when use lora, should uncomment this line
+            # quantization="awq",
+            # dtype="float16",  # TODO when use lora, should uncomment this line
         )
 
     def reason(
