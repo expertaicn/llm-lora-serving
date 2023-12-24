@@ -1,4 +1,5 @@
-FROM cuda-11.7-vllm-0.2.1-torch-2.0.1:v9
+# FROM cuda-11.7-vllm-0.2.1-torch-2.0.1:v9
+FROM cuda-12.1-vllm-0.2.6-torch-2.1.2:v9 
 
 WORKDIR /app/llmserver
 COPY . .

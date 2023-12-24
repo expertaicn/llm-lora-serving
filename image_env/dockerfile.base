@@ -4,7 +4,8 @@
 #############################################################
 
 # 使用 NVIDIA CUDA 基础镜像作为基础
-FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+# FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+FROM nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
 RUN apt-get update 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -45,11 +46,11 @@ WORKDIR /app
 
 # 安装 PyTorch
 # 2.0.1
-RUN pip3 install -i  https://mirrors.aliyun.com/pypi/simple/ torch==2.0.1 torchvision==0.15.2 torchaudio==2.0.2
+RUN pip3 install -i  https://mirrors.aliyun.com/pypi/simple/ torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2
 
-COPY vllm-0.2.1.post1 /app/vllm
+COPY ./vllm-0.2.6 /app/vllm
 RUN pip install -i https://mirrors.aliyun.com/pypi/simple/   -e /app/vllm
-RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  xformers==0.0.20
+# RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  xformers==0.0.20
 RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  redis
 RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  celery
 RUN pip install -i  https://mirrors.aliyun.com/pypi/simple/  mutagen
