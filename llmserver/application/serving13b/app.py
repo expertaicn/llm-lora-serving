@@ -6,11 +6,14 @@ if __name__ == "__main__":
     # model_name = "/home/tzw/models/tmp/shibing624/ziya-llama-13b-medical-merged"
     model_name = "/home/tzw/models/01-ai/Yi-34B-Chat-4bits/"
     # model_name = "/home/tzw/models/01-ai/Yi-34B-Chat-8bits/"
+    model_name = "/home/tzw/models/01ai/Yi-34B-Chat"
     llm = LLM(
         model=model_name,
         trust_remote_code=True,
         tensor_parallel_size=4,
-        quantization="awq",
+        # quantization="awq",
+        enforce_eager=True,
+        swap_space=0,
     )
     query = "一岁宝宝发烧能吃啥药"
     query = "肛门病变可能是什么疾病的症状"

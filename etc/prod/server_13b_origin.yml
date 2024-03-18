@@ -1,4 +1,4 @@
-base_model_name_or_path: /models/baichuan2/baichuan2_13b_vllm
+base_model_name_or_path: /home/tzw/models/baichuan2/baichuan2_13b_vllm
 inference_param_list:
 - max_tokens: 100
   name: general
@@ -12,5 +12,5 @@ lora_list:
   lora_model_path: adapter_model.bin
   lora_name: fake
   lora_parent: fake
-server_port: 8711
+server_port: 8180
 tensor_parallelism_size: 2
