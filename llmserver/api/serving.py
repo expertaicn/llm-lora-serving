@@ -15,6 +15,7 @@ import traceback
 from llmserver.log import config_log
 from llmserver.config import ServerConfig, InferenceParam
 from llmserver.impl.vllm_batch_server import VllmBatchServer
+from llmserver.api.proxy import call_event_extraction_proxy, EventRequestMsg
 from fastapi import FastAPI
 from typing import List
 
@@ -39,6 +40,13 @@ class RequestMsg(BaseModel):
     inference_task_type: str = "baichuan2_strong_certainty"
     inference_param: InferenceParam = None
     lora_name: str = None
+
+
+@app.post("/event_extraction")
+def event_exract(request_data: EventRequestMsg):
+    url = "http://localhost:8771/infectious_event_extraction"
+    data = call_event_extraction_proxy(url, request_data)
+    return data
 
 
 @app.post("/text_generation")
